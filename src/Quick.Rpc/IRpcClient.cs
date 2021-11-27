@@ -11,8 +11,8 @@ namespace Quick.Rpc
         /// Send serialized invocation data to server.
         /// </summary>
         /// <param name="invocationBytes">The invocation data sent to server, in bytes.</param>
-        /// <param name="serviceCustomData">The custom data associated with client registered service.</param>
-        void SendInvocation(byte[] invocationBytes, object serviceCustomData);
+        /// <param name="serviceToken">The custom token associated with client registered service.</param>
+        void SendInvocation(byte[] invocationBytes, object serviceToken);
 
         /// <summary>
         /// The event will be triggered when RPC return data is received.

@@ -4,13 +4,13 @@ namespace Quick.Rpc
 {
     internal class ClientServiceProxyInfo : IDisposable
     {
-        internal ClientServiceProxyInfo(Type serviceType, string serviceCollectionName)
+        internal ClientServiceProxyInfo(Type serviceType, object serviceToken)
         {
-            ServiceCollectionName = serviceCollectionName;
+            ServiceToken = serviceToken;
             ServiceType = serviceType;
         }
         public Type ServiceType { get; }
-        public string ServiceCollectionName { get; }
+        public object ServiceToken { get; }
         public object ServiceProxy { get; set; }
         public RpcInterceptor Interceptor { get; set; }
 

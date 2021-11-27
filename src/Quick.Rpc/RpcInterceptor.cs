@@ -12,9 +12,9 @@ namespace Quick.Rpc
     {
         #region Constructor
 
-        internal RpcInterceptor(IRpcClient rpcTransfer, int rpcTimeout, object serviceCustomData)
+        internal RpcInterceptor(IRpcClient rpcTransfer, int rpcTimeout, object serviceToken)
         {
-            _serviceCustomData = serviceCustomData;
+            _serviceToken = serviceToken;
             _rpcTimeout = rpcTimeout;
             _rpcTransfer = rpcTransfer;
             _rpcTransfer.RpcReturnDataReceived += _rpcTransfer_RpcReturnDataReceived;
@@ -26,7 +26,7 @@ namespace Quick.Rpc
 
         private int _rpcTimeout;
         private IRpcClient _rpcTransfer;
-        private object _serviceCustomData;
+        private object _serviceToken;
         private ConcurrentDictionary<Guid, RequestResponseTask> _requestTaskDict = new ConcurrentDictionary<Guid, RequestResponseTask>(); //The RPC task container.
 
         #endregion
@@ -128,7 +128,7 @@ namespace Quick.Rpc
 
             //Send the invocation data
             byte[] invocationBytes = Encoding.UTF8.GetBytes(invocationJson);
-            _rpcTransfer.SendInvocation(invocationBytes, _serviceCustomData);
+            _rpcTransfer.SendInvocation(invocationBytes, _serviceToken);
 
             if (!task.WaitEvent.WaitOne(_rpcTimeout))
             {

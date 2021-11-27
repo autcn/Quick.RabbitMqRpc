@@ -30,11 +30,11 @@ namespace Quick.Rpc
         /// Register the service proxy type to the channel.
         /// </summary>
         /// <typeparam name="TService">The service proxy type that will be called by user.</typeparam>
-        /// <param name="serviceCollectionName">The name of services that the TService belong to.</param>
-        public void RegisterServiceProxy<TService>(string serviceCollectionName)
+        /// <param name="serviceToken">The token of the register service.</param>
+        public void RegisterServiceProxy<TService>(object serviceToken)
         {
             Type serviceType = typeof(TService);
-            ClientServiceProxyInfo proxyInfo = new ClientServiceProxyInfo(serviceType, serviceCollectionName);
+            ClientServiceProxyInfo proxyInfo = new ClientServiceProxyInfo(serviceType, serviceToken);
             if (_clientProxyDict.TryGetValue(serviceType, out ClientServiceProxyInfo oldInfo))
             {
                 oldInfo.Dispose();
@@ -66,7 +66,7 @@ namespace Quick.Rpc
             }
             if (proxyInfo.ServiceProxy == null)
             {
-                proxyInfo.Interceptor = new RpcInterceptor(_rpcTransfer, RpcTimeout, proxyInfo.ServiceCollectionName);
+                proxyInfo.Interceptor = new RpcInterceptor(_rpcTransfer, RpcTimeout, proxyInfo.ServiceToken);
                 proxyInfo.ServiceProxy = _proxyGenerator.CreateInterfaceProxyWithoutTarget(proxyInfo.ServiceType, proxyInfo.Interceptor);
             }
             return (TService)proxyInfo.ServiceProxy;

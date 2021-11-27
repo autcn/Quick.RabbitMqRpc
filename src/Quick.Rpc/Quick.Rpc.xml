@@ -14,7 +14,7 @@
             Send serialized invocation data to server.
             </summary>
             <param name="invocationBytes">The invocation data sent to server, in bytes.</param>
-            <param name="serviceCustomData">The custom data associated with client registered service.</param>
+            <param name="serviceToken">The custom token associated with client registered service.</param>
         </member>
         <member name="E:Quick.Rpc.IRpcClient.RpcReturnDataReceived">
             <summary>
@@ -117,12 +117,12 @@
             Gets or sets the RPC call timeout, in millseconds.The default timeout is 30000ms.
             </summary>
         </member>
-        <member name="M:Quick.Rpc.ServiceProxyGenerator.RegisterServiceProxy``1(System.String)">
+        <member name="M:Quick.Rpc.ServiceProxyGenerator.RegisterServiceProxy``1(System.Object)">
             <summary>
             Register the service proxy type to the channel.
             </summary>
             <typeparam name="TService">The service proxy type that will be called by user.</typeparam>
-            <param name="serviceCollectionName">The name of services that the TService belong to.</param>
+            <param name="serviceToken">The token of the register service.</param>
         </member>
         <member name="M:Quick.Rpc.ServiceProxyGenerator.UnRegisterServiceProxy``1">
             <summary>

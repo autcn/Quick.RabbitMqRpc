@@ -10,9 +10,9 @@
     <RepositoryUrl>https://github.com/autcn/Quick.RabbitMqRpc</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>quick rpc rabbit rabbitmq</PackageTags>
-    <Version>1.0.0-beta.1</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.1-beta.2</Version>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
