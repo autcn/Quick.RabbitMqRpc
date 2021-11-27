@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.0-beta.1</Version>
+    <Authors>Jack</Authors>
+    <Company>Jack</Company>
+    <Description>It implements RPC communication function based on Quick.Rpc and RabbitMQ.</Description>
+    <Copyright />
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>logo.png</PackageIcon>
+    <RepositoryUrl>https://github.com/autcn/Quick.RabbitMqRpc</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>quick rpc rabbit rabbitmq</PackageTags>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>E:\GIT\Quick.RabbitMqRpc\src\Quick.RabbitMq\Quick.RabbitMq.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>E:\GIT\Quick.RabbitMqRpc\src\Quick.RabbitMq\Quick.RabbitMq.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="4.4.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Quick.Rpc\Quick.Rpc.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

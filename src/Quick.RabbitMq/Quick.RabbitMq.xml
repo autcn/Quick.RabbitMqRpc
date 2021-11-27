@@ -1,0 +1,394 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Quick.RabbitMq</name>
+    </assembly>
+    <members>
+        <member name="T:Quick.RabbitMq.BasicMessage">
+            <summary>
+            The basic message sent by channel.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.BasicMessage.Exchange">
+            <summary>
+            Gets or sets the name of exchange. The default value is "";
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.BasicMessage.RoutingKey">
+            <summary>
+            Gets or sets the routing key of the message.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.BasicMessage.BasicProperties">
+            <summary>
+            Gets or sets the message basic properties as extra data of the sending message.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.BasicMessage.Body">
+            <summary>
+            Gets or sets the body of the sending message, in bytes.
+            </summary>
+        </member>
+        <member name="T:Quick.RabbitMq.RabbitMqChannel">
+            <summary>
+            Provides functions to communicate with RabbitMq server.
+            </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.#ctor(Quick.RabbitMq.RabbitMqConnection)">
+            <summary>
+            Create an instance of RabbitMqChannel class.
+            </summary>
+            <param name="connection">An instance of RabbitMqConnection class.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.#ctor">
+            <summary>
+            Create an instance of RabbitMqChannel class. The constructor is only used in derived class.
+            </summary>
+        </member>
+        <member name="F:Quick.RabbitMq.RabbitMqChannel._connection">
+            <summary>
+            The instance of MQ connection that used to transfer message.
+            </summary>
+        </member>
+        <member name="F:Quick.RabbitMq.RabbitMqChannel._channel">
+            <summary>
+            The instance of channel that used for message sending and receiving.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqChannel.Exchange">
+            <summary>
+            Gets the name of the exchange associated with the connection.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqChannel.IsOpen">
+            <summary>
+            Gets whether the channel is open or not.
+            </summary>
+        </member>
+        <member name="E:Quick.RabbitMq.RabbitMqChannel.Received">
+            <summary>
+            The event will be triggered when MQ message received.
+            </summary>
+        </member>
+        <member name="E:Quick.RabbitMq.RabbitMqChannel.ModelShutdown">
+            <summary>
+            The event will be triggered when the channel is shutdown.
+            </summary>
+        </member>
+        <member name="E:Quick.RabbitMq.RabbitMqChannel.CallbackException">
+            <summary>
+            The event will be triggered when an exception occurs.
+            </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.AttachAndOpen(Quick.RabbitMq.RabbitMqConnection)">
+            <summary>
+            Attach the channel to existing connection, then open the channel.
+            </summary>
+            <param name="connection"></param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.Open">
+            <summary>
+            Open the channel.
+            </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.CreateBasicProperties">
+            <summary>
+            Create an instance of IBasicProperties that can be sent to MQ.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.SendText(System.String,System.String)">
+            <summary>
+            Send text message to MQ.
+            </summary>
+            <param name="routingKey">The routing key of the message.</param>
+            <param name="text">The text content of the message.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.SendText(System.String,RabbitMQ.Client.IBasicProperties,System.String)">
+            <summary>
+            Send text message to MQ.
+            </summary>
+            <param name="routingKey">The routing key of the message.</param>
+            <param name="basicProperties">An instance of IBasicProperties which represents extra data of the message.</param>
+            <param name="text">The text content of the message.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.SendMessage(System.String,System.Byte[])">
+            <summary>
+            Send bytes message to MQ.
+            </summary>
+            <param name="routingKey">The routing key of the message.</param>
+            <param name="data">The binary data that to be sent.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.SendMessage(System.String,RabbitMQ.Client.IBasicProperties,System.Byte[])">
+            <summary>
+            Send bytes message to MQ.
+            </summary>
+            <param name="routingKey">The routing key of the message.</param>
+            <param name="basicProperties">An instance of IBasicProperties which represents extra data of the message.</param>
+            <param name="body">The binary data that to be sent.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.SendExchangeText(System.String,System.String,System.String)">
+            <summary>
+            Send text message to specific exchange.
+            </summary>
+            <param name="exchange">The name of the exchange to which the message will be sent.</param>
+            <param name="routingKey">The routing key of the message.</param>
+            <param name="text">The text content of the message.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.SendExchangeText(System.String,System.String,RabbitMQ.Client.IBasicProperties,System.String)">
+            <summary>
+            Send text message to specific exchange.
+            </summary>
+            <param name="exchange">The name of the exchange to which the message will be sent.</param>
+            <param name="routingKey">The routing key of the message.</param>
+            <param name="basicProperties">An instance of IBasicProperties which represents extra data of the message.</param>
+            <param name="text">The text content of the message.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.SendExchangeMessage(System.String,System.String,System.Byte[])">
+            <summary>
+            Send text message to specific exchange.
+            </summary>
+            <param name="exchange">The name of the exchange to which the message will be sent.</param>
+            <param name="routingKey">The routing key of the message.</param>
+            <param name="body">The body of the message, in bytes.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.SendBasicMessage(Quick.RabbitMq.BasicMessage)">
+            <summary>
+            Send basic message to MQ.
+            </summary>
+            <param name="basicMessage">An instance of BasicMessage class.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.Subscribe(System.String[])">
+            <summary>
+            Subscribe routing keys in default exchange.
+            </summary>
+            <param name="routingKeys">The routing key collection.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.SubscribeExchange(System.String,System.String[])">
+            <summary>
+            Subscribe routing keys with specific exchange.
+            </summary>
+            <param name="exchange">The name of the exhange which the routing keys bind to.</param>
+            <param name="routingKeys">The routing key collection.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.UnSubscribe(System.String[])">
+            <summary>
+            UnSubscribe routing keys.
+            </summary>
+            <param name="routingKeys">The routing key collection.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.UnSubscribeExchange(System.String,System.String[])">
+            <summary>
+            UnSubscribe routing keys from specific exchange.
+            </summary>
+            <param name="exchange">The name of the exchange which the routing key had bound to.</param>
+            <param name="routingKeys">The routing key collection.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.UnSubscribeAll">
+            <summary>
+            UnSubscribe all routing keys from all exchanges.
+            </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.Close">
+            <summary>
+            Close the channel but keep the subscribes.
+            </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.Dispose">
+            <summary>
+            Close the channel and release all resources.
+            </summary>
+        </member>
+        <member name="T:Quick.RabbitMq.RabbitMqConnection">
+            <summary>
+            Provides functions to manage connection to MQ server.
+            </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqConnection.#ctor(System.String)">
+            <summary>
+            Create an instancet of RabbitMqConnection
+            </summary>
+            <param name="exchange">The name of the exchange associated with the connection.</param>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqConnection.Exchange">
+            <summary>
+            The name of the exchange.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqConnection.Uri">
+            <summary>
+            The uri string used by connection.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqConnection.User">
+            <summary>
+            The name the user that registered on MQ server.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqConnection.Password">
+            <summary>
+            The password of the registered user on MQ server.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqConnection.IsOpen">
+            <summary>
+            Gets whether the connection is open;
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqConnection.Channels">
+            <summary>
+            Gets the channels associated with the connection.
+            </summary>
+        </member>
+        <member name="E:Quick.RabbitMq.RabbitMqConnection.ConnectionShutdown">
+            <summary>
+            The event will be triggered when the connection is shutdown.
+            </summary>
+        </member>
+        <member name="E:Quick.RabbitMq.RabbitMqConnection.CallbackException">
+            <summary>
+            The event will be triggered when an exception occurs.
+            </summary>
+        </member>
+        <member name="E:Quick.RabbitMq.RabbitMqConnection.ConnectionBlocked">
+            <summary>
+            The event will be triggered when the connection blocked.
+            </summary>
+        </member>
+        <member name="E:Quick.RabbitMq.RabbitMqConnection.ConnectionUnblocked">
+            <summary>
+            The event will be triggered when the connection unblocked.
+            </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqConnection.Connect(RabbitMQ.Client.IConnectionFactory)">
+            <summary>
+            Connect to the MQ server with an instance of IConnectionFactory which provides full settings.
+            </summary>
+            <param name="connectionFactory"></param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqConnection.Connect(System.String,System.String,System.String)">
+            <summary>
+            Connect to the MQ server with most popular parameters.
+            </summary>
+            <param name="uri">The uri string used by connection.</param>
+            <param name="user">The name the user that registered on MQ server.</param>
+            <param name="password">The password of the registered user on MQ server.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqConnection.CreateChannel">
+            <summary>
+            Create a channel with current connection.
+            </summary>
+            <returns>An instance of channel.</returns>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqConnection.Close">
+            <summary>
+            Close all the channels and current connection but not release resources. The user can open it again.
+            </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqConnection.Dispose">
+            <summary>
+            Close channels and connection, then release all the resources.
+            </summary>
+        </member>
+        <member name="T:Quick.RabbitMq.RabbitMqRpcChannel">
+            <summary>
+            The RabbitMqRpcChannel class that provides functions for both RPC server and client.
+            </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqRpcChannel.#ctor(Quick.RabbitMq.RabbitMqConnection,System.String,System.Boolean)">
+            <summary>
+            Create an instance of RabbitMqRpcChannel class.It provides functions as RPC server or client according to "isRpcClient" parameter .
+            </summary>
+            <param name="connection">An instance of RabbitMqConnection.</param>
+            <param name="serviceCollectionName">The name of services that provided by RPC server.</param>
+            <param name="isRpcClient">If true, it has the functions of both server and client, otherwise it is just the server.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqRpcChannel.#ctor(Quick.RabbitMq.RabbitMqConnection,System.String)">
+            <summary>
+            Create an instance of RabbitMqRpcChannel class.It provides functions as RPC server.
+            </summary>
+            <param name="connection">An instance of RabbitMqConnection.</param>
+            <param name="serviceCollectionName">The name of services that provided by RPC server.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqRpcChannel.#ctor(Quick.RabbitMq.RabbitMqConnection)">
+            <summary>
+            Create an instance of RabbitMqRpcChannel class.It provides functions as RPC client.
+            </summary>
+            <param name="connection"></param>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqRpcChannel.IsRpcServer">
+            <summary>
+            Gets if the channel is RPC server.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqRpcChannel.IsRpcClient">
+            <summary>
+            Gets if the channel is RPC client.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqRpcChannel.RpcTimeout">
+            <summary>
+            Gets or sets the request timeout, in millseconds.The default timeout is 30000ms.
+            </summary>
+        </member>
+        <member name="E:Quick.RabbitMq.RabbitMqRpcChannel.RpcReturnDataReceived">
+            <summary>
+            The event will be triggered when RPC return data is received.
+            </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqRpcChannel.Open">
+            <summary>
+            Open the channel.It is automatically called when created. It is only used to reopen after closing.
+            </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqRpcChannel.AddServerService``1(``0)">
+            <summary>
+            Add service to RPC server container.
+            </summary>
+            <typeparam name="TInterface">The interface of service.</typeparam>
+            <param name="instance">The instance of the service that implement the TInterface.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqRpcChannel.AddServerService``1(System.Func{``0})">
+            <summary>
+            Add service to RPC server container.
+            </summary>
+            <typeparam name="TInterface">The interface of service.</typeparam>
+            <param name="constructor">The func delegate used to create service instance.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqRpcChannel.RegisterClientServiceProxy``1(System.String)">
+            <summary>
+            Register the service proxy type to the channel.
+            </summary>
+            <typeparam name="TService">The service proxy type that will be called by user.</typeparam>
+            <param name="serviceCollectionName">The name of services that the TService belong to.</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqRpcChannel.UnRegisterClientServiceProxy``1">
+            <summary>
+            UnRegister the service proxy type in the channel.
+            </summary>
+            <typeparam name="TService">The service proxy type that will be called by user.</typeparam>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqRpcChannel.GetClientServiceProxy``1">
+            <summary>
+            Get the service proxy from the channel.The user can use the service proxy to call RPC service.
+            </summary>
+            <typeparam name="TService">The service proxy type that will be called by user.</typeparam>
+            <returns>The instance of the service proxy.</returns>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqRpcChannel.Dispose">
+            <summary>
+            Release all the resources.
+            </summary>
+        </member>
+        <member name="T:Quick.RabbitMq.RabbitMqRpcProperties">
+            <summary>
+            Represents a static class that used to define constant properties for MQ rpc.
+            </summary>
+        </member>
+        <member name="F:Quick.RabbitMq.RabbitMqRpcProperties.RpcRequestQueueNamePrefix">
+            <summary>
+            The name prefix of the RPC server queue which received RPC call request.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Quick.Rpc</name>
+    </assembly>
+    <members>
+        <member name="T:Quick.Rpc.IRpcClient">
+            <summary>
+            The interface that provides functions to send and recv RPC data.
+            </summary>
+        </member>
+        <member name="M:Quick.Rpc.IRpcClient.SendInvocation(System.Byte[],System.Object)">
+            <summary>
+            Send serialized invocation data to server.
+            </summary>
+            <param name="invocationBytes">The invocation data sent to server, in bytes.</param>
+            <param name="serviceCustomData">The custom data associated with client registered service.</param>
+        </member>
+        <member name="E:Quick.Rpc.IRpcClient.RpcReturnDataReceived">
+            <summary>
+            The event will be triggered when RPC return data is received.
+            </summary>
+        </member>
+        <member name="T:Quick.Rpc.RpcReturnDataEventArgs">
+            <summary>
+            The event arguments that contains the data responsed from RPC server.
+            </summary>
+        </member>
+        <member name="M:Quick.Rpc.RpcReturnDataEventArgs.#ctor(System.Byte[])">
+            <summary>
+            Create an instance of RpcReturnDataEventArgs class.
+            </summary>
+            <param name="data">The data responsed from RPC server.</param>
+        </member>
+        <member name="P:Quick.Rpc.RpcReturnDataEventArgs.Data">
+            <summary>
+            Gets the data responsed from RPC server..
+            </summary>
+        </member>
+        <member name="T:Quick.Rpc.RpcException">
+            <summary>
+            The based class for RPC exception
+            </summary>
+        </member>
+        <member name="M:Quick.Rpc.RpcException.#ctor(System.Int32,System.String)">
+            <summary>
+            Create an instance of RpcException class.
+            </summary>
+            <param name="code">The code of the exception.</param>
+            <param name="message">The text message of the exception.</param>
+        </member>
+        <member name="M:Quick.Rpc.RpcException.#ctor(System.Int32)">
+            <summary>
+            Create an instance of RpcException class with specific code.
+            </summary>
+            <param name="code"></param>
+        </member>
+        <member name="P:Quick.Rpc.RpcException.Code">
+            <summary>
+            Gets the code of the exception.
+            </summary>
+        </member>
+        <member name="T:Quick.Rpc.RpcTimeoutException">
+            <summary>
+            Represents an exception that thrown as the RPC call is timeout.
+            </summary>
+        </member>
+        <member name="M:Quick.Rpc.RpcTimeoutException.#ctor">
+            <summary>
+            Create an instance of RpcTimeoutException class.
+            </summary>
+        </member>
+        <member name="T:Quick.Rpc.RpcServerExecutor">
+            <summary>
+            The RPC service container that provides method to execute RPC calls.
+            </summary>
+        </member>
+        <member name="M:Quick.Rpc.RpcServerExecutor.AddService``1(``0)">
+            <summary>
+            Add service to RPC server container.
+            </summary>
+            <typeparam name="TInterface">The interface of service.</typeparam>
+            <param name="instance">The instance of the service that implement the TInterface.</param>
+        </member>
+        <member name="M:Quick.Rpc.RpcServerExecutor.AddService``1(System.Func{``0})">
+            <summary>
+            Add service to RPC server container.
+            </summary>
+            <typeparam name="TInterface">The interface of service.</typeparam>
+            <param name="constructor">The func delegate used to create service instance.</param>
+        </member>
+        <member name="M:Quick.Rpc.RpcServerExecutor.ExecuteAsync(System.Byte[])">
+            <summary>
+            Execute an RPC call with serialized data.
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Quick.Rpc.RpcServerExecutor.Dispose">
+            <summary>
+            Release all resources.
+            </summary>
+        </member>
+        <member name="T:Quick.Rpc.ServiceProxyGenerator">
+            <summary>
+            Generate service proxy for client RPC calls.
+            </summary>
+        </member>
+        <member name="M:Quick.Rpc.ServiceProxyGenerator.#ctor(Quick.Rpc.IRpcClient)">
+            <summary>
+            Create an instance of ServiceProxyGenerator
+            </summary>
+            <param name="rpcTransfer">A class instance which implemented IRpcClient interface.</param>
+        </member>
+        <member name="P:Quick.Rpc.ServiceProxyGenerator.RpcTimeout">
+            <summary>
+            Gets or sets the RPC call timeout, in millseconds.The default timeout is 30000ms.
+            </summary>
+        </member>
+        <member name="M:Quick.Rpc.ServiceProxyGenerator.RegisterServiceProxy``1(System.String)">
+            <summary>
+            Register the service proxy type to the channel.
+            </summary>
+            <typeparam name="TService">The service proxy type that will be called by user.</typeparam>
+            <param name="serviceCollectionName">The name of services that the TService belong to.</param>
+        </member>
+        <member name="M:Quick.Rpc.ServiceProxyGenerator.UnRegisterServiceProxy``1">
+            <summary>
+            UnRegister the service proxy type in the channel.
+            </summary>
+            <typeparam name="TService">The service proxy type that will be called by user.</typeparam>
+        </member>
+        <member name="M:Quick.Rpc.ServiceProxyGenerator.GetServiceProxy``1">
+            <summary>
+            Get the service proxy from the channel.The user can use the service proxy to call RPC service.
+            </summary>
+            <typeparam name="TService">The service proxy type that will be called by user.</typeparam>
+            <returns>The instance of the service proxy.</returns>
+        </member>
+        <member name="M:Quick.Rpc.ServiceProxyGenerator.Dispose">
+            <summary>
+            Release all resources.
+            </summary>
+        </member>
+    </members>
+</doc>
