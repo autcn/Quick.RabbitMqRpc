@@ -9,12 +9,11 @@
             The interface that provides functions to send and recv RPC data.
             </summary>
         </member>
-        <member name="M:Quick.Rpc.IRpcClient.SendInvocation(System.Byte[],System.Object)">
+        <member name="M:Quick.Rpc.IRpcClient.SendInvocation(Quick.Rpc.SendInvocationContext)">
             <summary>
             Send serialized invocation data to server.
             </summary>
-            <param name="invocationBytes">The invocation data sent to server, in bytes.</param>
-            <param name="serviceToken">The custom token associated with client registered service.</param>
+            <param name="context">The invocation context that will be used during sending.</param>
         </member>
         <member name="E:Quick.Rpc.IRpcClient.RpcReturnDataReceived">
             <summary>
@@ -35,6 +34,41 @@
         <member name="P:Quick.Rpc.RpcReturnDataEventArgs.Data">
             <summary>
             Gets the data responsed from RPC server..
+            </summary>
+        </member>
+        <member name="T:Quick.Rpc.SendInvocationContext">
+            <summary>
+            Represents a invocation context while sending to server.
+            </summary>
+        </member>
+        <member name="M:Quick.Rpc.SendInvocationContext.#ctor(System.Guid,System.Byte[],System.Object)">
+            <summary>
+            Create an instance of SendInvocationContext.
+            </summary>
+            <param name="id">The id of the invocation.</param>
+            <param name="invocationBytes">The content of the invocation, in bytes.</param>
+            <param name = "serviceToken" >The custom token associated with client registered service.</param>
+        </member>
+        <member name="M:Quick.Rpc.SendInvocationContext.#ctor(System.Guid,System.Byte[])">
+            <summary>
+            Create an instance of SendInvocationContext.
+            </summary>
+            <param name="id">The id of the invocation.</param>
+            <param name="invocationBytes">The content of the invocation, in bytes.</param>
+        </member>
+        <member name="P:Quick.Rpc.SendInvocationContext.Id">
+            <summary>
+            Gets the id of invockation
+            </summary>
+        </member>
+        <member name="P:Quick.Rpc.SendInvocationContext.InvocationBytes">
+            <summary>
+            Gets the content of invocation,in bytes.
+            </summary>
+        </member>
+        <member name="P:Quick.Rpc.SendInvocationContext.ServiceToken">
+            <summary>
+            The custom token associated with client registered service.
             </summary>
         </member>
         <member name="T:Quick.Rpc.RpcException">
@@ -75,6 +109,11 @@
             The RPC service container that provides method to execute RPC calls.
             </summary>
         </member>
+        <member name="P:Quick.Rpc.RpcServerExecutor.ServiceProvider">
+            <summary>
+            Gets or sets a service provider to create RPC call services.
+            </summary>
+        </member>
         <member name="M:Quick.Rpc.RpcServerExecutor.AddService``1(``0)">
             <summary>
             Add service to RPC server container.
@@ -88,6 +127,15 @@
             </summary>
             <typeparam name="TInterface">The interface of service.</typeparam>
             <param name="constructor">The func delegate used to create service instance.</param>
+        </member>
+        <member name="M:Quick.Rpc.RpcServerExecutor.CreateErrorResponse(System.Guid,System.Net.HttpStatusCode,System.String)">
+            <summary>
+            When a transport layer error occurs, the user can call this method to directly create an error message.
+            </summary>
+            <param name="id">The id of the invocation.</param>
+            <param name="statusCode">The status code in http codes.</param>
+            <param name="message">A message describing the error.</param>
+            <returns></returns>
         </member>
         <member name="M:Quick.Rpc.RpcServerExecutor.ExecuteAsync(System.Byte[])">
             <summary>

@@ -248,13 +248,13 @@ namespace Quick.RabbitMq
             return _proxyGenerator.GetServiceProxy<TService>();
         }
 
-        void IRpcClient.SendInvocation(byte[] invocationBytes, object serviceToken)
+        void IRpcClient.SendInvocation(SendInvocationContext context)
         {
             if (!IsRpcClient)
             {
 
             }
-            string serviceCollectionName = serviceToken.ToString();
+            string serviceCollectionName = context.ServiceToken.ToString();
             string serverQueueName = RabbitMqRpcProperties.RpcRequestQueueNamePrefix + serviceCollectionName;
             IBasicProperties props = _channel.CreateBasicProperties();
             props.ReplyTo = _rpcClientQueueName;
@@ -263,7 +263,7 @@ namespace Quick.RabbitMq
                 exchange: "",
                 routingKey: serverQueueName,
                 basicProperties: props,
-                body: invocationBytes);
+                body: context.InvocationBytes);
         }
 
         /// <summary>

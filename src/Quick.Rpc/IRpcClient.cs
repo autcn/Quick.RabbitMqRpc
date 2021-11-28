@@ -10,9 +10,8 @@ namespace Quick.Rpc
         /// <summary>
         /// Send serialized invocation data to server.
         /// </summary>
-        /// <param name="invocationBytes">The invocation data sent to server, in bytes.</param>
-        /// <param name="serviceToken">The custom token associated with client registered service.</param>
-        void SendInvocation(byte[] invocationBytes, object serviceToken);
+        /// <param name="context">The invocation context that will be used during sending.</param>
+        void SendInvocation(SendInvocationContext context);
 
         /// <summary>
         /// The event will be triggered when RPC return data is received.
@@ -38,5 +37,49 @@ namespace Quick.Rpc
         /// Gets the data responsed from RPC server..
         /// </summary>
         public byte[] Data { get; }
+    }
+
+    /// <summary>
+    /// Represents a invocation context while sending to server.
+    /// </summary>
+    public class SendInvocationContext
+    {
+        /// <summary>
+        /// Create an instance of SendInvocationContext.
+        /// </summary>
+        /// <param name="id">The id of the invocation.</param>
+        /// <param name="invocationBytes">The content of the invocation, in bytes.</param>
+        /// <param name = "serviceToken" >The custom token associated with client registered service.</param>
+        public SendInvocationContext(Guid id, byte[] invocationBytes, object serviceToken)
+        {
+            Id = id;
+            InvocationBytes = invocationBytes;
+            ServiceToken = serviceToken;
+        }
+
+        /// <summary>
+        /// Create an instance of SendInvocationContext.
+        /// </summary>
+        /// <param name="id">The id of the invocation.</param>
+        /// <param name="invocationBytes">The content of the invocation, in bytes.</param>
+        public SendInvocationContext(Guid id, byte[] invocationBytes) : this(id, invocationBytes, null)
+        {
+
+        }
+
+        /// <summary>
+        /// Gets the id of invockation
+        /// </summary>
+        public Guid Id { get; }
+
+        /// <summary>
+        /// Gets the content of invocation,in bytes.
+        /// </summary>
+        public byte[] InvocationBytes { get; }
+
+        /// <summary>
+        /// The custom token associated with client registered service.
+        /// </summary>
+        public object ServiceToken { get; }
     }
 }

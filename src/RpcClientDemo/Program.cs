@@ -3,6 +3,7 @@ using Quick.RabbitMq;
 using RpcProtocolDemo;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Quick.RabbitMqRpc
 {
@@ -26,6 +27,7 @@ namespace Quick.RabbitMqRpc
                         IOrderService orderService = clientChannel.GetClientServiceProxy<IOrderService>();
 
                         TestCalls(orderService);
+                        TestMultiThread(orderService);
 
                         Console.WriteLine("RPC calls ended! \r\nPress any key to exit...");
                         Console.ReadLine();
@@ -36,6 +38,21 @@ namespace Quick.RabbitMqRpc
             {
                 Console.WriteLine(ex.Message);
                 Console.ReadLine();
+            }
+        }
+
+        static void TestMultiThread(IOrderService orderService)
+        {
+            for (int i = 1; i <= 3; i++)
+            {
+                Task.Factory.StartNew(idx =>
+                {
+                    for (int j = 1; j <= 100; j++)
+                    {
+                        DateTime dateTime = orderService.GetServerTime();
+                        Console.WriteLine($"{idx}_{j}: {dateTime}");
+                    }
+                }, i);
             }
         }
 

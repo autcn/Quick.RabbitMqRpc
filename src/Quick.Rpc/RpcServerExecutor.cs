@@ -31,6 +31,11 @@ namespace Quick.Rpc
             public ServiceRegisterType Type { get; }
         }
 
+        /// <summary>
+        /// Gets or sets a service provider to create RPC call services.
+        /// </summary>
+        public IServiceProvider ServiceProvider { get; set; }
+
         private ConcurrentDictionary<Type, ServiceRegisterInfo> _serviceDict = new ConcurrentDictionary<Type, ServiceRegisterInfo>(); //The service container for RPC server.
 
         private void DeserializeInvocationArgments(InvocationData invocationData, string requestJson)
@@ -89,6 +94,23 @@ namespace Quick.Rpc
         }
 
         /// <summary>
+        /// When a transport layer error occurs, the user can call this method to directly create an error message.
+        /// </summary>
+        /// <param name="id">The id of the invocation.</param>
+        /// <param name="statusCode">The status code in http codes.</param>
+        /// <param name="message">A message describing the error.</param>
+        /// <returns></returns>
+        public static byte[] CreateErrorResponse(Guid id, HttpStatusCode statusCode, string message)
+        {
+            ReturnData<object> returnData = new ReturnData<object>();
+            returnData.Id = id;
+            returnData.HttpStatusCode = (int)statusCode;
+            returnData.ExceptionMessage = message;
+            string responseJson = JsonConvert.SerializeObject(returnData, RpcInvocationSerializerSettings.Default);
+            return Encoding.UTF8.GetBytes(responseJson);
+        }
+
+        /// <summary>
         /// Execute an RPC call with serialized data.
         /// </summary>
         /// <param name="data"></param>
@@ -130,30 +152,48 @@ namespace Quick.Rpc
                         //So we need to convert them again through the "ArgumentTypes" parameter.
                         DeserializeInvocationArgments(invocationData, requestJson);
                     }
-
+                    object service = null;
                     //Find service
                     if (!_serviceDict.TryGetValue(invocationData.MethodDeclaringType, out ServiceRegisterInfo serviceRegisterInfo))
                     {
-                        //The service is not found, reply 404
-                        returnData.HttpStatusCode = (int)HttpStatusCode.NotFound;
-                        returnData.ExceptionMessage = "The service is not found.";
-                        break;
+                        if (ServiceProvider != null)
+                        {
+                            try
+                            {
+                                service = ServiceProvider.GetService(invocationData.MethodDeclaringType);
+                            }
+                            catch
+                            {
+
+                            }
+                        }
+
+                        if (service == null)
+                        {
+                            //The service is not found, reply 404
+                            returnData.HttpStatusCode = (int)HttpStatusCode.NotFound;
+                            returnData.ExceptionMessage = "The service is not found.";
+                            break;
+                        }
                     }
 
                     //Call service
                     try
                     {
-                        object service = null;
-                        if (serviceRegisterInfo.Type == ServiceRegisterType.Instance)
+                        if (service == null)
                         {
-                            service = serviceRegisterInfo.Service;
+                            if (serviceRegisterInfo.Type == ServiceRegisterType.Instance)
+                            {
+                                service = serviceRegisterInfo.Service;
+                            }
+                            else if (serviceRegisterInfo.Type == ServiceRegisterType.Func)
+                            {
+                                var funcType = serviceRegisterInfo.Service.GetType();
+                                var method = funcType.GetMethod("Invoke");
+                                service = method.Invoke(serviceRegisterInfo.Service, null);
+                            }
                         }
-                        else if (serviceRegisterInfo.Type == ServiceRegisterType.Func)
-                        {
-                            var funcType = serviceRegisterInfo.Service.GetType();
-                            var method = funcType.GetMethod("Invoke");
-                            service = method.Invoke(serviceRegisterInfo.Service, null);
-                        }
+
                         object returnObject = InvocationExecutor.Execute(service, invocationData);
                         var returnProperty = realType.GetProperty(nameof(ReturnData<int>.ReturnObject));
                         returnProperty.SetValue(returnData, returnObject);

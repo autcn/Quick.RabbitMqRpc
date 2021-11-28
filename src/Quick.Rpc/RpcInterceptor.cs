@@ -64,8 +64,13 @@ namespace Quick.Rpc
                 return;
             }
 
-            Type returnDataType = typeof(ReturnData<>).MakeGenericType(task.ReturnType == typeof(void) ? typeof(object) : task.ReturnType);
-            returnData = (ReturnData)JsonConvert.DeserializeObject(returnJson, returnDataType, RpcInvocationSerializerSettings.Default);
+            Type returnDataType = null;
+            if (returnData.HttpStatusCode == (int)HttpStatusCode.OK)
+            {
+                returnDataType = typeof(ReturnData<>).MakeGenericType(task.ReturnType == typeof(void) ? typeof(object) : task.ReturnType);
+                returnData = (ReturnData)JsonConvert.DeserializeObject(returnJson, returnDataType, RpcInvocationSerializerSettings.Default);
+            }
+
             try
             {
                 //Extract status firstly.
@@ -128,7 +133,7 @@ namespace Quick.Rpc
 
             //Send the invocation data
             byte[] invocationBytes = Encoding.UTF8.GetBytes(invocationJson);
-            _rpcTransfer.SendInvocation(invocationBytes, _serviceToken);
+            _rpcTransfer.SendInvocation(new SendInvocationContext(taskId, invocationBytes, _serviceToken));
 
             if (!task.WaitEvent.WaitOne(_rpcTimeout))
             {
