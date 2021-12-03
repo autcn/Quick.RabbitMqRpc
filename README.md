@@ -1,7 +1,7 @@
 # Quick.RabbitMqRpc
 It contains a simple RPC framework and an implementation based on RabbitMQ.
 
-The nuget url is:  https://www.nuget.org/packages/Quick.RabbitMq/1.0.0-beta.1
+The nuget url is:  https://www.nuget.org/packages/Quick.RabbitMq
 
 ## Step1:  Protocol 
 
