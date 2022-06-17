@@ -172,11 +172,31 @@
             <typeparam name="TService">The service proxy type that will be called by user.</typeparam>
             <param name="serviceToken">The token of the register service.</param>
         </member>
+        <member name="M:Quick.Rpc.ServiceProxyGenerator.RegisterServiceProxy(System.Type,System.Object)">
+            <summary>
+            Register the service proxy type to the channel.
+            </summary>
+            <param name="serviceType">The service proxy type that will be called by user.</param>
+            <param name="serviceToken">The token of the register service.</param>
+        </member>
+        <member name="M:Quick.Rpc.ServiceProxyGenerator.UnRegisterServiceProxy(System.Type)">
+            <summary>
+            UnRegister the service proxy type in the channel.
+            </summary>
+            <param name="serviceType">The service proxy type that will be called by user.</param>
+        </member>
         <member name="M:Quick.Rpc.ServiceProxyGenerator.UnRegisterServiceProxy``1">
             <summary>
             UnRegister the service proxy type in the channel.
             </summary>
             <typeparam name="TService">The service proxy type that will be called by user.</typeparam>
+        </member>
+        <member name="M:Quick.Rpc.ServiceProxyGenerator.GetServiceProxy(System.Type)">
+            <summary>
+            Get the service proxy from the channel.The user can use the service proxy to call RPC service.
+            </summary>
+            <param name="serviceType">The service proxy type that will be called by user.</param>
+            <returns>The instance of the service proxy.</returns>
         </member>
         <member name="M:Quick.Rpc.ServiceProxyGenerator.GetServiceProxy``1">
             <summary>

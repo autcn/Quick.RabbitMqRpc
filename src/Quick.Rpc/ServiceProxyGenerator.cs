@@ -43,6 +43,30 @@ namespace Quick.Rpc
         }
 
         /// <summary>
+        /// Register the service proxy type to the channel.
+        /// </summary>
+        /// <param name="serviceType">The service proxy type that will be called by user.</param>
+        /// <param name="serviceToken">The token of the register service.</param>
+        public void RegisterServiceProxy(Type serviceType, object serviceToken)
+        {
+            ClientServiceProxyInfo proxyInfo = new ClientServiceProxyInfo(serviceType, serviceToken);
+            if (_clientProxyDict.TryGetValue(serviceType, out ClientServiceProxyInfo oldInfo))
+            {
+                oldInfo.Dispose();
+            }
+            _clientProxyDict[serviceType] = proxyInfo;
+        }
+
+        /// <summary>
+        /// UnRegister the service proxy type in the channel.
+        /// </summary>
+        /// <param name="serviceType">The service proxy type that will be called by user.</param>
+        public void UnRegisterServiceProxy(Type serviceType)
+        {
+            _clientProxyDict.TryRemove(serviceType, out _);
+        }
+
+        /// <summary>
         /// UnRegister the service proxy type in the channel.
         /// </summary>
         /// <typeparam name="TService">The service proxy type that will be called by user.</typeparam>
@@ -50,6 +74,25 @@ namespace Quick.Rpc
         {
             Type serviceType = typeof(TService);
             _clientProxyDict.TryRemove(serviceType, out _);
+        }
+
+        /// <summary>
+        /// Get the service proxy from the channel.The user can use the service proxy to call RPC service.
+        /// </summary>
+        /// <param name="serviceType">The service proxy type that will be called by user.</param>
+        /// <returns>The instance of the service proxy.</returns>
+        public object GetServiceProxy(Type serviceType)
+        {
+            if (!_clientProxyDict.TryGetValue(serviceType, out ClientServiceProxyInfo proxyInfo))
+            {
+                throw new Exception("The service has not registered.");
+            }
+            if (proxyInfo.ServiceProxy == null)
+            {
+                proxyInfo.Interceptor = new RpcInterceptor(_rpcTransfer, RpcTimeout, proxyInfo.ServiceToken);
+                proxyInfo.ServiceProxy = _proxyGenerator.CreateInterfaceProxyWithoutTarget(proxyInfo.ServiceType, proxyInfo.Interceptor);
+            }
+            return proxyInfo.ServiceProxy;
         }
 
         /// <summary>
