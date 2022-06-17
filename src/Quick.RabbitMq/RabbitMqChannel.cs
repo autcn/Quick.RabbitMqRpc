@@ -18,9 +18,20 @@ namespace Quick.RabbitMq
         /// Create an instance of RabbitMqChannel class.
         /// </summary>
         /// <param name="connection">An instance of RabbitMqConnection class.</param>
-        public RabbitMqChannel(RabbitMqConnection connection)
+        /// <param name="channelOptions">An instance of CreateChannelOptions class.</param>
+        public RabbitMqChannel(RabbitMqConnection connection, CreateChannelOptions channelOptions)
         {
+            _channelOptions = channelOptions;
+            _queueName = _channelOptions.QueueName;
             AttachAndOpen(connection);
+        }
+
+        /// <summary>
+        /// Create an instance of RabbitMqChannel class.
+        /// </summary>
+        /// <param name="connection">An instance of RabbitMqConnection class.</param>
+        public RabbitMqChannel(RabbitMqConnection connection) : this(connection, new CreateChannelOptions())
+        {
         }
 
         /// <summary>
@@ -28,6 +39,7 @@ namespace Quick.RabbitMq
         /// </summary>
         protected RabbitMqChannel()
         {
+            _channelOptions = new CreateChannelOptions();
         }
 
         #endregion
@@ -39,6 +51,8 @@ namespace Quick.RabbitMq
         /// </summary>
         protected RabbitMqConnection _connection;
 
+        private CreateChannelOptions _channelOptions;
+
         /// <summary>
         /// The instance of channel that used for message sending and receiving.
         /// </summary>
@@ -46,6 +60,7 @@ namespace Quick.RabbitMq
 
         private EventingBasicConsumer _consumer;
         private string _queueName;
+        private bool _hasQueue;
         private HashSet<string> _routingKeySet { get; } = new HashSet<string>();
 
         #endregion
@@ -61,6 +76,21 @@ namespace Quick.RabbitMq
         /// Gets whether the channel is open or not.
         /// </summary>
         public bool IsOpen => _channel != null && _channel.IsOpen;
+
+        /// <summary>
+        /// Gets whether the channel has queue or not.
+        /// </summary>
+        public bool HasQueue => _hasQueue;
+
+        /// <summary>
+        /// Gets the name of the queue.
+        /// </summary>
+        public string QueueName => _queueName;
+
+        /// <summary>
+        /// Gets or sets the user data that associated with this channel.
+        /// </summary>
+        public object Tag { get; set; }
 
         #endregion
 
@@ -122,6 +152,15 @@ namespace Quick.RabbitMq
             ModelShutdown?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Create a queue.
+        /// </summary>
+        /// <returns>The </returns>
+        protected virtual QueueDeclareOk QueueDeclare(IModel channel)
+        {
+            return channel.QueueDeclare();
+        }
+
         #endregion
 
         #region Public methods
@@ -159,6 +198,10 @@ namespace Quick.RabbitMq
                                           durable: false,
                                        autoDelete: true);
             }
+
+            //Set Qos
+            _channel.BasicQos(_channelOptions.QosSize, _channelOptions.QosCount, _channelOptions.IsGlobalQos);
+
             //If routing keys exist, subscribe.
             foreach (string routingKey in _routingKeySet.ToList())
             {
@@ -305,9 +348,14 @@ namespace Quick.RabbitMq
         public void SubscribeExchange(string exchange, params string[] routingKeys)
         {
             EnsureConnected();
-            if (_queueName == null)
+            if (!_hasQueue)
             {
-                _queueName = _channel.QueueDeclare().QueueName;
+                _queueName = _channel.QueueDeclare(_channelOptions.QueueName,
+                                                   _channelOptions.Durable,
+                                                   _channelOptions.Exclusive,
+                                                   _channelOptions.AutoDelete,
+                                                   _channelOptions.Arguments).QueueName;
+                _hasQueue = true;
             }
 
             foreach (var routingKey in routingKeys)
@@ -324,7 +372,7 @@ namespace Quick.RabbitMq
                 {
                     Received?.Invoke(this, ea);
                 };
-                _channel.BasicConsume(_queueName, true, _consumer);
+                _channel.BasicConsume(_queueName, _channelOptions.AutoAck, _consumer);
             }
         }
 
@@ -345,7 +393,7 @@ namespace Quick.RabbitMq
         public void UnSubscribeExchange(string exchange, params string[] routingKeys)
         {
             EnsureConnected();
-            if (_queueName == null || _consumer == null)
+            if (!_hasQueue || _consumer == null)
             {
                 return;
             }
@@ -372,6 +420,45 @@ namespace Quick.RabbitMq
         }
 
         /// <summary>
+        /// Get the count of messages ready to be delivered to consumer.
+        /// </summary>
+        /// <param name="queueName">The name of the queue</param>
+        /// <returns>The message count</returns>
+        public uint GetQueueMessageCount(string queueName)
+        {
+            EnsureConnected();
+            //return _channel.QueueDeclarePassive(queueName).MessageCount;
+            return _channel.MessageCount(queueName);
+        }
+
+        /// <summary>
+        /// Get the count of messages ready to be delivered to consumer.
+        /// </summary>
+        /// <returns>The message count</returns>
+        public uint GetQueueMessageCount()
+        {
+            if (_queueName == null)
+            {
+                throw new Exception("The default queue dose not exist.");
+            }
+            return GetQueueMessageCount(_queueName);
+        }
+
+        /// <summary>
+        /// Acknowledge one or more delivered message(s).
+        /// </summary>
+        /// <param name="deliveryTag"></param>
+        /// <param name="multiple"></param>
+        public void BasicAck(ulong deliveryTag, bool multiple)
+        {
+            if (_channel == null)
+            {
+                throw new Exception("The channel is not created.");
+            }
+            _channel.BasicAck(deliveryTag, multiple);
+        }
+
+        /// <summary>
         /// Close the channel but keep the subscribes.
         /// </summary>
         public void Close()
@@ -392,20 +479,9 @@ namespace Quick.RabbitMq
         /// </summary>
         public virtual void Dispose()
         {
-            if (_channel != null)
-            {
-                _queueName = null;
-                _channel.Close();
-                _channel.Dispose();
-
-                _connection.RemoveChannel(this);
-                _connection = null;
-
-                _channel = null;
-                _consumer = null;
-
-                _routingKeySet.Clear();
-            }
+            Close();
+            _routingKeySet?.Clear();
+            _connection = null;
         }
 
         #endregion

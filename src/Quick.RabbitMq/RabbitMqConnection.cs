@@ -2,6 +2,7 @@
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
+using System.Timers;
 
 namespace Quick.RabbitMq
 {
@@ -32,7 +33,9 @@ namespace Quick.RabbitMq
         private IConnectionFactory _factory;
         private IConnection _connection;
         private object _lockObj = new object();
+        private Timer _timer;
         private List<RabbitMqChannel> _channels = new List<RabbitMqChannel>();
+        private bool _isCurrentDisconnected = true;
 
         #endregion
 
@@ -80,6 +83,11 @@ namespace Quick.RabbitMq
         public event EventHandler<ShutdownEventArgs> ConnectionShutdown;
 
         /// <summary>
+        /// The event will be triggered when the connection is created.
+        /// </summary>
+        public event EventHandler<EventArgs> Connected;
+
+        /// <summary>
         /// The event will be triggered when an exception occurs.
         /// </summary>
         public event EventHandler<CallbackExceptionEventArgs> CallbackException;
@@ -108,6 +116,7 @@ namespace Quick.RabbitMq
 
         private void _connection_ConnectionShutdown(object sender, ShutdownEventArgs e)
         {
+            _isCurrentDisconnected = false;
             ConnectionShutdown?.Invoke(this, e);
         }
 
@@ -126,6 +135,18 @@ namespace Quick.RabbitMq
             ConnectionUnblocked?.Invoke(this, e);
         }
 
+        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            if (_connection != null && _connection.IsOpen)
+            {
+                if (!_isCurrentDisconnected)
+                {
+                    _isCurrentDisconnected = true;
+                    Connected?.Invoke(this, new EventArgs());
+                }
+            }
+        }
+
         #endregion
 
         #region Public methods
@@ -142,6 +163,8 @@ namespace Quick.RabbitMq
             _connection.ConnectionShutdown += _connection_ConnectionShutdown;
             _connection.ConnectionUnblocked += _connection_ConnectionUnblocked;
             _connection.ConnectionBlocked += _connection_ConnectionBlocked;
+            Connected?.Invoke(this, new EventArgs());
+            _isCurrentDisconnected = true;
             if (_channels != null)
             {
                 foreach (var channel in _channels)
@@ -149,6 +172,15 @@ namespace Quick.RabbitMq
                     channel.Open();
                 }
             }
+            if(_timer != null)
+            {
+                _timer.Stop();
+                _timer.Dispose();
+            }
+            _timer = new Timer();
+            _timer.Interval = 2000;
+            _timer.Elapsed += _timer_Elapsed;
+            _timer.Start();
         }
 
         /// <summary>
@@ -185,7 +217,21 @@ namespace Quick.RabbitMq
             return new RabbitMqChannel(this);
         }
 
-        internal void AddChannel(RabbitMqChannel channel)
+        /// <summary>
+        /// Create a channel with current connection.
+        /// </summary>
+        /// <param name="channelOptions">An instance of CreateChannelOptions class</param>
+        /// <returns>An instance of channel.</returns>
+        public RabbitMqChannel CreateChannel(CreateChannelOptions channelOptions)
+        {
+            return new RabbitMqChannel(this, channelOptions);
+        }
+
+        /// <summary>
+        /// Add a channel to current connection.
+        /// </summary>
+        /// <param name="channel">>An instance of RabbitMqChannel class</param>
+        public void AddChannel(RabbitMqChannel channel)
         {
             EnsureConnected();
             lock (_lockObj)
@@ -194,11 +240,16 @@ namespace Quick.RabbitMq
             }
         }
 
-        internal void RemoveChannel(RabbitMqChannel channel)
+        /// <summary>
+        /// Remove a channel from this connection.
+        /// </summary>
+        /// <param name="channel">An instance of RabbitMqChannel class that will be removed.</param>
+        public void RemoveChannel(RabbitMqChannel channel)
         {
             lock (_lockObj)
             {
                 _channels.Remove(channel);
+                channel.Dispose();
             }
         }
 
@@ -213,13 +264,17 @@ namespace Quick.RabbitMq
                 {
                     foreach (RabbitMqChannel channel in _channels)
                     {
-                        channel.Close();
+                        channel.Dispose();
                     }
+                    _channels.Clear();
                 }
 
                 _connection.Close();
                 _connection.Dispose();
                 _connection = null;
+                _timer.Stop();
+                _timer.Dispose();
+                _timer = null;
             }
         }
 
@@ -228,21 +283,7 @@ namespace Quick.RabbitMq
         /// </summary>
         public void Dispose()
         {
-            if (_connection != null)
-            {
-                lock (_lockObj)
-                {
-                    foreach (RabbitMqChannel channel in _channels)
-                    {
-                        channel.Close();
-                    }
-                }
-
-                _channels.Clear();
-                _connection.Close();
-                _connection.Dispose();
-                _connection = null;
-            }
+            Close();
         }
 
         #endregion

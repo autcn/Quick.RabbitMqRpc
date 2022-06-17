@@ -29,10 +29,67 @@
             Gets or sets the body of the sending message, in bytes.
             </summary>
         </member>
+        <member name="T:Quick.RabbitMq.CreateChannelOptions">
+            <summary>
+            Represents the options for channel creation.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.CreateChannelOptions.AutoAck">
+            <summary>
+            Gets or sets if using auto ack after a message received.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.CreateChannelOptions.QueueName">
+            <summary>
+            Gets or sets the queue name, if empty, an auto name will be used.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.CreateChannelOptions.Durable">
+            <summary>
+            Gets or sets if this queue will survive a broker restart?
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.CreateChannelOptions.Exclusive">
+            <summary>
+            Should this queue use be limited to its declaring connection? Such a queue will be deleted when its declaring connection closes.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.CreateChannelOptions.AutoDelete">
+            <summary>
+            Should this queue be auto-deleted when its last consumer (if any) unsubscribes?
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.CreateChannelOptions.QosCount">
+            <summary>
+            Gets or sets the prefetch count.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.CreateChannelOptions.QosSize">
+            <summary>
+            Gets or sets the prefetch size.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.CreateChannelOptions.IsGlobalQos">
+            <summary>
+            Gets or sets if the qos settings used for global.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.CreateChannelOptions.Arguments">
+            <summary>
+            Optional; additional queue arguments, e.g. "x-queue-type"
+            </summary>
+        </member>
         <member name="T:Quick.RabbitMq.RabbitMqChannel">
             <summary>
             Provides functions to communicate with RabbitMq server.
             </summary>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.#ctor(Quick.RabbitMq.RabbitMqConnection,Quick.RabbitMq.CreateChannelOptions)">
+            <summary>
+            Create an instance of RabbitMqChannel class.
+            </summary>
+            <param name="connection">An instance of RabbitMqConnection class.</param>
+            <param name="channelOptions">An instance of CreateChannelOptions class.</param>
         </member>
         <member name="M:Quick.RabbitMq.RabbitMqChannel.#ctor(Quick.RabbitMq.RabbitMqConnection)">
             <summary>
@@ -65,6 +122,21 @@
             Gets whether the channel is open or not.
             </summary>
         </member>
+        <member name="P:Quick.RabbitMq.RabbitMqChannel.HasQueue">
+            <summary>
+            Gets whether the channel has queue or not.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqChannel.QueueName">
+            <summary>
+            Gets the name of the queue.
+            </summary>
+        </member>
+        <member name="P:Quick.RabbitMq.RabbitMqChannel.Tag">
+            <summary>
+            Gets or sets the user data that associated with this channel.
+            </summary>
+        </member>
         <member name="E:Quick.RabbitMq.RabbitMqChannel.Received">
             <summary>
             The event will be triggered when MQ message received.
@@ -85,6 +157,12 @@
             Attach the channel to existing connection, then open the channel.
             </summary>
             <param name="connection"></param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.QueueDeclare(RabbitMQ.Client.IModel)">
+            <summary>
+            Create a queue.
+            </summary>
+            <returns>The </returns>
         </member>
         <member name="M:Quick.RabbitMq.RabbitMqChannel.Open">
             <summary>
@@ -189,6 +267,26 @@
             UnSubscribe all routing keys from all exchanges.
             </summary>
         </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.GetQueueMessageCount(System.String)">
+            <summary>
+            Get the count of messages ready to be delivered to consumer.
+            </summary>
+            <param name="queueName">The name of the queue</param>
+            <returns>The message count</returns>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.GetQueueMessageCount">
+            <summary>
+            Get the count of messages ready to be delivered to consumer.
+            </summary>
+            <returns>The message count</returns>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqChannel.BasicAck(System.UInt64,System.Boolean)">
+            <summary>
+            Acknowledge one or more delivered message(s).
+            </summary>
+            <param name="deliveryTag"></param>
+            <param name="multiple"></param>
+        </member>
         <member name="M:Quick.RabbitMq.RabbitMqChannel.Close">
             <summary>
             Close the channel but keep the subscribes.
@@ -245,6 +343,11 @@
             The event will be triggered when the connection is shutdown.
             </summary>
         </member>
+        <member name="E:Quick.RabbitMq.RabbitMqConnection.Connected">
+            <summary>
+            The event will be triggered when the connection is created.
+            </summary>
+        </member>
         <member name="E:Quick.RabbitMq.RabbitMqConnection.CallbackException">
             <summary>
             The event will be triggered when an exception occurs.
@@ -279,6 +382,25 @@
             Create a channel with current connection.
             </summary>
             <returns>An instance of channel.</returns>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqConnection.CreateChannel(Quick.RabbitMq.CreateChannelOptions)">
+            <summary>
+            Create a channel with current connection.
+            </summary>
+            <param name="channelOptions">An instance of CreateChannelOptions class</param>
+            <returns>An instance of channel.</returns>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqConnection.AddChannel(Quick.RabbitMq.RabbitMqChannel)">
+            <summary>
+            Add a channel to current connection.
+            </summary>
+            <param name="channel">>An instance of RabbitMqChannel class</param>
+        </member>
+        <member name="M:Quick.RabbitMq.RabbitMqConnection.RemoveChannel(Quick.RabbitMq.RabbitMqChannel)">
+            <summary>
+            Remove a channel from this connection.
+            </summary>
+            <param name="channel">An instance of RabbitMqChannel class that will be removed.</param>
         </member>
         <member name="M:Quick.RabbitMq.RabbitMqConnection.Close">
             <summary>
